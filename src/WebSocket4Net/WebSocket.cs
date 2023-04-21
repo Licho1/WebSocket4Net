@@ -45,19 +45,19 @@ namespace WebSocket4Net
 
         public WebSocketState State { get; private set; } = WebSocketState.None;
 
-        public WebSocket(string url)
-            : this(url, NullLogger.Instance)
+        public WebSocket(string url, EndPoint remoteEndPoint = null)
+            : this(url, NullLogger.Instance, remoteEndPoint: remoteEndPoint)
         {
 
         }
 
-        public WebSocket(string url, ILogger logger)
-            : this(url, new ChannelOptions { Logger = logger })
+        public WebSocket(string url, ILogger logger, EndPoint remoteEndPoint = null)
+            : this(url, new ChannelOptions { Logger = logger }, remoteEndPoint)
         {
 
         }
 
-        public WebSocket(string url, ChannelOptions channelOptions)
+        public WebSocket(string url, ChannelOptions channelOptions, EndPoint remoteEndPoint = null)
             : base(new HandshakePipelineFilter(), channelOptions)
         {
             Uri = new Uri(url);
@@ -66,11 +66,11 @@ namespace WebSocket4Net
 
             if ("ws".Equals(Uri.Scheme, StringComparison.OrdinalIgnoreCase))
             {
-                _remoteEndPoint = ResolveUri(Uri, 80);
+                _remoteEndPoint = remoteEndPoint ?? ResolveUri(Uri, 80);
             }
             else if ("wss".Equals(Uri.Scheme, StringComparison.OrdinalIgnoreCase))
             {
-                _remoteEndPoint = ResolveUri(Uri, 443);
+                _remoteEndPoint =remoteEndPoint ?? ResolveUri(Uri, 443);
             }
             else
             {
